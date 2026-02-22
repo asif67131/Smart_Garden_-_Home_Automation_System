@@ -145,6 +145,10 @@ System Overview
 
 ![Physical Build View](images/crkt_irr.jpg)
 
+Blynk Applicaiton
+
+![Blynk Dashboard](images/crkt_irr.jpg)
+
 ---
 
 ## 🎥
