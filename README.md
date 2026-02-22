@@ -16,7 +16,8 @@ A robust, non-blocking automation system built for **ESP8266 (NodeMCU)**. This p
 9. [Product Gallery](#product-gallery)
 10. [Demonstration Video](#demonstration-video)
 11. [Future Roadmap](#future-roadmap)
-12. [License](#license)
+12. [Source Code](#source-code)
+13. [License](#license)
 
 ---
 
@@ -160,6 +161,17 @@ If the pump runs but moisture doesn't increase, the system locks to protect the 
 - [ ] Implement Water Reservoir level sensing (Ultrasonic).
 - [ ] Design a 3D-printable weather-resistant enclosure.
 - [ ] OTA (Over-the-Air) firmware updates.
+
+---
+
+## 💻
+## Source Code
+
+The complete firmware for this project is maintained in a separate file for clean version control. You can access the latest stable build below:
+
+### 📂 [Click here to view the Full Code File](code.ino)
+
+> **Note:** Ensure you have your `BLYNK_AUTH_TOKEN`, `WiFi SSID`, and `Password` ready to paste into the code before uploading.
 
 ---
 
