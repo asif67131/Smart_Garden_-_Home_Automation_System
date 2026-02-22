@@ -143,7 +143,7 @@ If the pump runs but moisture doesn't increase, the system locks to protect the 
 
 System Overview
 
-![Physical Build View](./images/crkt_irr.jpeg)
+![Physical Build View](images/crkt_irr.jpg)
 
 ---
 
