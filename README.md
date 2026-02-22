@@ -141,9 +141,9 @@ If the pump runs but moisture doesn't increase, the system locks to protect the 
 ## 📸
 ## Product Gallery
 
-| System Overview | Control Box Interior | Soil Sensor Setup |
-| :---: | :---: | :---: |
-| ![Main](https://via.placeholder.com/300x200?text=Main+System) 
+ System Overview 
+
+ [Main](https://via.placeholder.com/300x200?text=Main+System) 
 
 
 
