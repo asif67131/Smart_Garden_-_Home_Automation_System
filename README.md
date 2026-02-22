@@ -147,7 +147,7 @@ System Overview
 
 Blynk Applicaiton
 
-![Blynk Dashboard](images/crkt_irr.jpg)
+![Blynk Dashboard](images/blynk_dashboard.jpg)
 
 ---
 
