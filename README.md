@@ -5,22 +5,23 @@ A robust, non-blocking automation system built for **ESP8266 (NodeMCU)**. This p
 ---
 
 ## 📑 Table of Contents
-1. [🚀 Key Features](#-key-features)
-2. [💻 Software Prerequisites](#-software-prerequisites)
-3. [🗺️ System Architecture](#-system-architecture)
-4. [🔌 Wiring Summary](#-wiring-summary)
-5. [📱 Blynk App Structure](#-blynk-app-structure)
-6. [🛠️ Operating Instructions](#-operating-instructions)
-7. [⚙️ Installation](#-installation)
-8. [⚠️ Critical Troubleshooting](#-critical-troubleshooting)
-9. [📸 Product Gallery](#-product-gallery)
-10. [🎥 Demonstration Video](#-demonstration-video)
-11. [📈 Future Roadmap](#-future-roadmap)
-12. [📜 License](#-license)
+1. [Key Features](#key-features)
+2. [Software Prerequisites](#software-prerequisites)
+3. [System Architecture](#system-architecture)
+4. [Wiring Summary](#wiring-summary)
+5. [Blynk App Structure](#blynk-app-structure)
+6. [Operating Instructions](#operating-instructions)
+7. [Installation](#installation)
+8. [Critical Troubleshooting](#critical-troubleshooting)
+9. [Product Gallery](#product-gallery)
+10. [Demonstration Video](#demonstration-video)
+11. [Future Roadmap](#future-roadmap)
+12. [License](#license)
 
 ---
 
-## 🚀 Key Features
+## 🚀
+## Key Features
 
 * **Intelligent Irrigation:** Reads soil moisture every 5 minutes and provides precise water bursts.
 * **Safety Lockout:** Automatically locks the pump if moisture doesn't rise after 3 attempts (prevents flooding/pump burnout).
@@ -31,7 +32,8 @@ A robust, non-blocking automation system built for **ESP8266 (NodeMCU)**. This p
 
 ---
 
-## 💻 Software Prerequisites
+## 💻
+## Software Prerequisites
 
 To compile this project, you will need the **Arduino IDE** and the following libraries:
 
@@ -41,7 +43,8 @@ To compile this project, you will need the **Arduino IDE** and the following lib
 
 ---
 
-## 🗺️ System Architecture
+## 🗺️
+## System Architecture
 
 The system operates on a **Non-Blocking State Machine**. This ensures that the user can toggle lights or the pump manually at any time without waiting for the automation timers to finish.
 
@@ -57,7 +60,8 @@ The system operates on a **Non-Blocking State Machine**. This ensures that the u
 
 ---
 
-## 🔌 Wiring Summary
+## 🔌
+## Wiring Summary
 
 ### 1. NodeMCU (ESP8266) - High Load / Data
 | Pin | Component | Description |
@@ -84,7 +88,8 @@ The system operates on a **Non-Blocking State Machine**. This ensures that the u
 
 ---
 
-## 📱 Blynk App Structure
+## 📱
+## Blynk App Structure
 
 | Widget | Virtual Pin | Configuration | Purpose |
 | :--- | :--- | :--- | :--- |
@@ -96,7 +101,8 @@ The system operates on a **Non-Blocking State Machine**. This ensures that the u
 
 ---
 
-## 🛠️ Operating Instructions
+## 🛠️
+## Operating Instructions
 
 ### 1. Adjusting Water Flow
 Use the **V5 Slider** on the app. The system supports 0.5s increments. This determines how long the pump stays on when the soil is dry.
@@ -111,7 +117,8 @@ If the pump runs but moisture doesn't increase, the system locks to protect the 
 
 ---
 
-## ⚙️ Installation
+## ⚙️
+## Installation
 
 1. **Blynk Setup**: Create a template in the Blynk Console and add Datastreams V0-V10.
 2. **Token Config**: Replace `BLYNK_AUTH_TOKEN`, `ssid`, and `pass` in the code.
@@ -121,7 +128,8 @@ If the pump runs but moisture doesn't increase, the system locks to protect the 
 
 ---
 
-## ⚠️ Critical Troubleshooting
+## ⚠️
+## Critical Troubleshooting
 
 * **Code Upload Fails:** Pin **D8** must be LOW during boot. Disconnect its relay wire during upload.
 * **I2C/Button Glitches:** Add a $1000\mu\text{F}$ capacitor across 5V and GND. If buttons are erratic, add $4.7\text{k}\Omega$ pull-up resistors to **D1/D2**.
@@ -129,7 +137,8 @@ If the pump runs but moisture doesn't increase, the system locks to protect the 
 
 ---
 
-## 📸 Product Gallery
+## 📸
+## Product Gallery
 
 | System Overview | Control Box Interior | Soil Sensor Setup |
 | :---: | :---: | :---: |
@@ -137,13 +146,15 @@ If the pump runs but moisture doesn't increase, the system locks to protect the 
 
 ---
 
-## 🎥 Demonstration Video
+## 🎥
+## Demonstration Video
 
 [![Demo](https://img.youtube.com/vi/YOUR_VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
 
 ---
 
-## 📈 Future Roadmap
+## 📈
+## Future Roadmap
 
 - [ ] Add an I2C OLED display for local moisture monitoring.
 - [ ] Implement Water Reservoir level sensing (Ultrasonic).
@@ -152,5 +163,6 @@ If the pump runs but moisture doesn't increase, the system locks to protect the 
 
 ---
 
-## 📜 License
+## 📜
+## License
 This project is open-source. Feel free to modify and expand!
