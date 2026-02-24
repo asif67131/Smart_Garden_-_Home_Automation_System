@@ -154,7 +154,11 @@ Blynk Applicaiton
 ## 🎥
 ## Demonstration Video
 
-[![Demo](https://youtu.be/jG-4NX07znc)
+Click the image below to watch the full technical walkthrough and system demonstration on YouTube.
+
+[![Smart Garden Demo Thumbnail](https://img.youtube.com/vi/jG-4NX07znc/maxresdefault.jpg)](https://youtu.be/jG-4NX07znc)
+
+*Note: This video covers the instant boot protocol, non-blocking irrigation logic, and the safety lockout features.*
 
 ---
 
