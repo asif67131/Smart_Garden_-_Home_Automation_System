@@ -154,7 +154,7 @@ Blynk Applicaiton
 ## 🎥
 ## Demonstration Video
 
-[![Demo](https://img.youtube.com/vi/YOUR_VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
+[![Demo](https://youtu.be/jG-4NX07znc)
 
 ---
 
