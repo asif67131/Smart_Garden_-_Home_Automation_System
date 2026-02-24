@@ -1,14 +1,14 @@
 #define BLYNK_TEMPLATE_ID "abc"
 #define BLYNK_TEMPLATE_NAME "LED Control System"
-#define BLYNK_AUTH_TOKEN "abc"    //enter ur blynk credentials here
+#define BLYNK_AUTH_TOKEN "abc"        //replace abc with ur blynk credentials
 #define BLYNK_PRINT Serial
 
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
 #include <Wire.h> 
 
-char ssid[] = "xyz";
-char pass[] = "xyz";    //enter ur wifi and passcode here
+char ssid[] = "XYZ";
+char pass[] = "XYZ";                  //replace XYZ with ur wifi credentials
 
 #define PCF_ADDRESS 0x20 
 
@@ -19,6 +19,7 @@ char pass[] = "xyz";    //enter ur wifi and passcode here
 #define PUMP_GPIO   D6   
 #define SOIL_POWER  D5   
 #define SOIL_PIN    A0   
+#define BUZZER_PIN  D3   // NEW: Direct GPIO for Buzzer
 
 WidgetTerminal terminal(V10); 
 BlynkTimer timer;
@@ -28,14 +29,15 @@ bool s_LED1 = false;
 bool s_LED2 = false;   
 bool s_LED3 = false;   
 bool s_PUMP = false;   
-bool s_BUZZER = true;  
 bool manualOverride = false; 
+
+bool p_LED1, p_LED2, p_LED3; // Previous states for terminal logging
 
 unsigned long actionStartTime = 0;
 int systemState = 0; 
 
 // Adjustable Settings
-int pumpDuration = 500; 
+int pumpDuration = 1000;             
 const int DRY_THRESHOLD = 30;        
 const int MOISTURE_INCREASE_REQ = 2; 
 const int MAX_FAILURES = 3;          
@@ -43,15 +45,37 @@ const int MAX_FAILURES = 3;
 int currentSoil = 0;
 int previousSoil = 0;
 int failureCount = 0;
-int waterCycleCount = 0; 
 bool systemLocked = false; 
 
-void updateHardware() {
-  byte data = 0;
-  // Pins P0, P4, P5, P6 are Inputs (HIGH)
-  data |= (1 << 0) | (1 << 4) | (1 << 5) | (1 << 6); 
-  if (s_BUZZER) data |= (1 << 7);
+BLYNK_CONNECTED() {
+  terminal.clear();
+  terminal.println(F("==============================="));
+  terminal.println(F("   SYSTEM ACTIVE & ONLINE      "));
+  terminal.println(F("==============================="));
+  terminal.flush();
+  Blynk.virtualWrite(V1, s_LED1);
+  Blynk.virtualWrite(V2, s_LED2);
+  Blynk.virtualWrite(V3, s_LED3);
+  Blynk.virtualWrite(V4, s_PUMP);
+}
 
+void printHeartbeat() {
+  terminal.print(F("HEARTBEAT: System OK | Uptime: "));
+  terminal.print(millis() / 60000); 
+  terminal.println(F(" min"));
+  terminal.flush();
+}
+
+void updateHardware() {
+  // Terminal Logging for LEDs
+  if (s_LED1 != p_LED1) { terminal.print(F("LED 1: ")); terminal.println(s_LED1 ? F("ON") : F("OFF")); p_LED1 = s_LED1; }
+  if (s_LED2 != p_LED2) { terminal.print(F("LED 2: ")); terminal.println(s_LED2 ? F("ON") : F("OFF")); p_LED2 = s_LED2; }
+  if (s_LED3 != p_LED3) { terminal.print(F("LED 3: ")); terminal.println(s_LED3 ? F("ON") : F("OFF")); p_LED3 = s_LED3; }
+  terminal.flush();
+
+  // PCF8574 Buttons (Setting pins HIGH to read them)
+  byte data = 0;
+  data |= (1 << 0) | (1 << 4) | (1 << 5) | (1 << 6); 
   Wire.beginTransmission(PCF_ADDRESS);
   Wire.write(data);
   Wire.endTransmission();
@@ -73,22 +97,21 @@ bool readButton(int pin) {
 }
 
 void beep(int duration) {
-  s_BUZZER = false; updateHardware();
+  digitalWrite(BUZZER_PIN, HIGH);
   delay(duration);
-  s_BUZZER = true;  updateHardware();
+  digitalWrite(BUZZER_PIN, LOW);
 }
 
 void updateTerminalStatus() {
-  terminal.println(F("\n--- LIVE SYSTEM UPDATE ---"));
-  terminal.print(F("PUMP: ")); terminal.println(s_PUMP ? F("ON (MANUAL)") : F("IDLE"));
+  terminal.println(F("--- LIVE STATUS UPDATE ---"));
+  terminal.print(F("PUMP: ")); terminal.println(s_PUMP ? F("ON") : F("IDLE"));
   terminal.print(F("SOIL: ")); terminal.print(currentSoil); terminal.println(F("%"));
-  terminal.print(F("SET BURST: ")); terminal.print(pumpDuration / 1000.0); terminal.println(F("s"));
   terminal.flush();
 }
 
 int readSoilMoisture() {
   digitalWrite(SOIL_POWER, HIGH); 
-  delay(50); // Stabilization
+  delay(50); 
   int raw = analogRead(SOIL_PIN);
   digitalWrite(SOIL_POWER, LOW);  
   return constrain(map(raw, 1024, 400, 0, 100), 0, 100);
@@ -109,7 +132,7 @@ void runIrrigationLogic() {
   }
 
   if (systemState == 2) { // SOAKING
-    if (now - actionStartTime >= 30000) {
+    if (now - actionStartTime >= 10000) { 
       currentSoil = readSoilMoisture();
       int increase = currentSoil - previousSoil;
       if (increase < MOISTURE_INCREASE_REQ) {
@@ -120,7 +143,8 @@ void runIrrigationLogic() {
       }
       if (failureCount >= MAX_FAILURES) {
         systemLocked = true;
-        terminal.println(F("!!! SYSTEM LOCKED: WATER NOT INCREASING !!!"));
+        terminal.println(F("!!! SYSTEM LOCKED !!!"));
+        terminal.println(F("Type 'RESET' to continue."));
       }
       systemState = 0;
       updateTerminalStatus();
@@ -136,7 +160,6 @@ void startCheck() {
   if (currentSoil < DRY_THRESHOLD) {
     previousSoil = currentSoil; 
     s_PUMP = true; 
-    waterCycleCount++;
     updateHardware(); 
     systemState = 1;
     actionStartTime = millis();
@@ -145,7 +168,6 @@ void startCheck() {
 }
 
 void checkPhysicalButtons() {
-  // P0 - Manual Pump Toggle
   if (readButton(0)) {
     if (!systemLocked) {
       s_PUMP = !s_PUMP;
@@ -158,7 +180,6 @@ void checkPhysicalButtons() {
     while(readButton(0)) delay(10);
   }
 
-  // Physical LED Buttons
   if (readButton(4)) { s_LED1 = !s_LED1; updateHardware(); Blynk.virtualWrite(V1, s_LED1); while(readButton(4)) delay(10); }
   if (readButton(5)) { s_LED2 = !s_LED2; updateHardware(); Blynk.virtualWrite(V2, s_LED2); while(readButton(5)) delay(10); }
   if (readButton(6)) { s_LED3 = !s_LED3; updateHardware(); Blynk.virtualWrite(V3, s_LED3); while(readButton(6)) delay(10); }
@@ -179,15 +200,19 @@ BLYNK_WRITE(V4) {
 
 BLYNK_WRITE(V5) {
   int rawValue = param.asInt();
-  // Round to 500ms steps and constrain between 0.5s and 10s
   pumpDuration = constrain((rawValue / 500) * 500, 500, 10000);
 }
 
 BLYNK_WRITE(V10) {
-  if (String(param.asStr()) == "RESET") {
+  String cmd = param.asStr();
+  cmd.toUpperCase(); cmd.trim();        
+  if (cmd == "RESET") {
     systemLocked = false;
     failureCount = 0;
-    terminal.println(F("System Unlocked. Ready."));
+    systemState = 0;
+    terminal.println(F("> Command Received: RESET"));
+    terminal.println(F("> System Unlocked."));
+    terminal.flush();
     beep(100);
   }
 }
@@ -201,12 +226,15 @@ void setup() {
   pinMode(LED3_GPIO, OUTPUT); digitalWrite(LED3_GPIO, HIGH);
   pinMode(PUMP_GPIO, OUTPUT); digitalWrite(PUMP_GPIO, HIGH);
   pinMode(SOIL_POWER, OUTPUT); digitalWrite(SOIL_POWER, LOW);
+  pinMode(BUZZER_PIN, OUTPUT); digitalWrite(BUZZER_PIN, LOW); // Setup D3
 
   Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+  
+  p_LED1 = s_LED1; p_LED2 = s_LED2; p_LED3 = s_LED3;
   updateHardware(); 
   
-  // 5 Minute check interval
-  timer.setInterval(300000L, startCheck); 
+  timer.setInterval(10000L, startCheck);    
+  timer.setInterval(30000L, printHeartbeat); 
 }
 
 void loop() {
